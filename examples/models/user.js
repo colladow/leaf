@@ -1,6 +1,6 @@
 var leafDb = require('../../db');
 
-leafDb.Model.define('User', {
+Model.define('User', {
   types: {
     username: String,
     first: String,
@@ -13,5 +13,3 @@ leafDb.Model.define('User', {
     }
   }
 });
-
-
