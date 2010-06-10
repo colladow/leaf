@@ -32,20 +32,55 @@ Step(
 
 var model = require('./model/');
 
-var User = new model.Model({
+var user = new model.model({
   fields: {
-    username: new model.Field({ type: String }),
-    first: new model.Field({ type: String }),
-    last: new model.Field({ type: String, required: true })
+    username: new model.field({ 
+      type: 'string', 
+      custom: function(value){
+        return value.indexOf('c') === 0;
+      }
+     }),
+    first: new model.field({ type: 'string' }),
+    last: new model.field({ type: 'string', required: true }),
+    langs: new model.field({ type: 'object' }),
+    address: new model.field({ 
+      type: 'object', 
+      custom: function(value){
+        if(typeof value.zip !== 'number'){
+          return false;
+        }
+
+        return true;
+      }
+    })
+  },
+  validate: function(instance){
+    var target = '',
+        last = instance.get('last') || '',
+        first = instance.get('first') || '';
+
+    target = last.toLowerCase();
+    target += first.slice(0, 1).toLowerCase();
+
+    return target === instance.get('username');
   }
 });
 
-sys.puts(User.toString());
+sys.puts(user.toString());
 
-var u = User.create({ 
+var u = user.create({ 
   username: 'colladow',
   first: 'Wilson',
-  last: 'Collado'
+  last: 'Collado',
+  langs: ['javascript', 'python'],
+  address: {
+    street: '7711 60th St',
+    city: 'Ridgewood',
+    state: 'NY',
+    zip: 11385
+  }
 });
 
-sys.p(u);
+sys.puts(u);
+
+sys.puts(u.validate());

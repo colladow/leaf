@@ -1,71 +1,139 @@
-var Field = function(options){
-  this.options = options;
-};
+// The model.field object represents a field in a document.
+var field = function(options){
+  // special options include:
+  //   validation:
+  //     required -> is the field required
+  //     type     -> what typeof should be returned
+  //     custom   -> custom validation function
+  var options = options,
+      self = {};
 
-Field.prototype = {
-  get: function(attribute){
-    return this.options[attribute];
-  },
+  // returns an option
+  self.get = function(attribute){
+    return options[attribute];
+  };
 
-  validate: function(value){
-    if(!value) return false;
+  // valdiates the field
+  self.validate = function(value){
+    if(self.get('required') && !value){
+      return false;
+    }
 
-    if(this.get('required')){
-      if(value != null && value != undefined){
-        if(this.get('type') == String && value == '') return false;
-      }else{
-        return false;
-      }
+    if(self.get('type') && value && typeof value !== self.get('type')){
+      return false;
+    }
+
+    if(self.get('custom') && !self.get('custom')(value)){
+      return false;
     }
 
     return true;
+  };
+
+  return self;
+};
+
+// The model.model object represents a document in the database.
+var model = function(options){
+  // special options include
+  //   fields   -> an object of field names to instances of model.field
+  //   validate -> a custom validation function to validate this model 
+  //               independently of field validation, can be used
+  //               to test things where one field depends on the other
+  var options = options,
+      fields = {},
+      validate = function(){ return true; },
+      self = {};
+
+  // create an instance of this model
+  self.create = function(obj){
+    var instance = modelInstance(fields, obj, validate);
+
+    return instance;
+  };
+
+  self.toString = function(){
+    var str = '';
+    for(var f in fields){
+      str += f + ' => ' + fields[f] + '\n';
+    }
+
+    return str;
+  };
+
+  // unpack the fields
+  if(options.fields){
+    for(var f in options.fields){
+      if(options.fields.hasOwnProperty(f)){
+        fields[f] = options.fields[f];
+      }
+    }
   }
+
+  if(options.validate && typeof options.validate === 'function'){
+    validate = options.validate;
+  }
+
+  return self;
 };
 
-var Model = function(options){
-  this.options = options;
-  this.fields = {};
+// The model.modelInstance object is an instance of a model defined by model.model.
+var modelInstance = function(fields, values, customValidation){
+  var fields = fields,                        // the list of model.field objects
+      customValidation = customValidation,
+      fieldValues = {},
+      newFields = [],
+      self = {};
 
-  this.unpackFields();
-};
+  self.get = function(fieldName){
+    return fieldValues[fieldName];
+  };
 
-Model.prototype = {
-  create: function(obj){
-    var fields = {};
+  self.set = function(fieldName, value){
+    if(!fields[fieldName]){
+      newFields.push(fieldName);
+    }
+
+    fieldValues[fieldName] = value;
+  };
+
+  self.toString = function(){
+    var str = '';
+
+    for(var f in fields){
+      str += f + ' => ' + self.get(f) + '\n';
+    }
+
+    return str;
+  };
+
+  // check this instance for errors
+  self.validate = function(){
     var errors = [];
 
-    for(var f in this.fields){
-      if(this.fields[f].validate(obj[f])){
-        fields[f] = obj[f];
-      }else{
+    for(var f in fields){
+      if(!fields[f].validate(self.get(f))){
         errors.push(f + ' failed to validate.');
       }
     }
 
-    if(errors.length > 0){
-      return errors;
-    }else{
-      return fields;
-    }
-  },
+    // don't run the custom validation if the fields aren't all clean
+    if(errors.length === 0 && !customValidation(self)){
+      errors.push('Custom validation failed.');
+    };
 
-  toString: function(){
-    var str = '';
-    for(var f in this.fields){
-      str += f + ' => ' + this.fields[f] + '\n';
-    }
+    return errors;
+  };
 
-    return str;
-  },
-
-  unpackFields: function(){
-    if(!this.options.fields) return;
-
-    for(var f in this.options.fields){
-      this.fields[f] = this.options.fields[f];
+  // unpack the values
+  for(var val in values){
+    if(values.hasOwnProperty(val)){
+      self.set(val, values[val]);
     }
   }
-};
 
-exports.Field = Field;
-exports.Model = Model;
+  return self;
+};
+  
+exports.field = field;
+exports.model = model;
