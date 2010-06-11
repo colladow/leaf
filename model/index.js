@@ -1,3 +1,21 @@
+var mongo = require('mongodb/');
+
+var server = new mongo.Server('localhost', mongo.Connection.DEFAULT_PORT);
+var db = new mongo.Db('test', server);
+
+var fillModel = function(user, callback){
+
+  db.open(function(err, db){
+    db.collection('users', function(err, coll){
+      coll.findOne({ username: user }, function(err, doc){
+        require('sys').puts(user);
+        callback(err, doc);
+        db.close();
+      });
+    });
+  });
+};
+
 // The model.field object represents a field in a document.
 var field = function(options){
   // special options include:
@@ -5,21 +23,20 @@ var field = function(options){
   //     required -> is the field required
   //     type     -> what typeof should be returned
   //     custom   -> custom validation function
-  var options = options,
-      self = {};
+  var self = {};
 
   // returns an option
-  self.get = function(attribute){
+  self.get = function get(attribute){
     return options[attribute];
   };
 
   // valdiates the field
-  self.validate = function(value){
+  self.validate = function validate(value){
     if(self.get('required') && !value){
       return false;
     }
 
-    if(self.get('type') && value && typeof value !== self.get('type')){
+    if(self.get('type') && value && value.constructor !== self.get('type')){
       return false;
     }
 
@@ -40,19 +57,44 @@ var model = function(options){
   //   validate -> a custom validation function to validate this model 
   //               independently of field validation, can be used
   //               to test things where one field depends on the other
-  var options = options,
-      fields = {},
+  var fields = {},
+      methods = {},
       validate = function(){ return true; },
       self = {};
 
   // create an instance of this model
-  self.create = function(obj){
-    var instance = modelInstance(fields, obj, validate);
+  self.create = function create(obj){
+    var instance = modelInstance({
+      fields: fields, 
+      values: obj, 
+      methods: methods, 
+      customValidation: validate
+    });
 
     return instance;
   };
 
-  self.toString = function(){
+  self.get = function get(id, callback){
+    var id = id,
+        callback = callback;
+
+    if(typeof id === 'string'){
+      id = new mongo.ObjectID(id);
+    }
+
+    fillModel(id, function(err, doc){
+      var instance = modelInstance({
+        fields: fields,
+        values: doc,
+        methods: methods,
+        customValidation: validate
+      });
+
+      callback(instance);
+    });
+  };
+
+  self.toString = function toString(){
     var str = '';
     for(var f in fields){
       str += f + ' => ' + fields[f] + '\n';
@@ -68,20 +110,36 @@ var model = function(options){
         fields[f] = options.fields[f];
       }
     }
+
+    if(!fields['_id']){
+      fields['_id'] = field({
+        type: mongo.ObjectID,
+        required: true
+      });
+    }
   }
 
   if(options.validate && typeof options.validate === 'function'){
     validate = options.validate;
   }
 
+  if(options.methods){
+    for(var m in options.methods){
+      if(options.methods.hasOwnProperty(m) && typeof options.methods[m] === 'function'){
+        methods[m] = options.methods[m];
+      }
+    }
+  }
+
   return self;
 };
 
 // The model.modelInstance object is an instance of a model defined by model.model.
-var modelInstance = function(fields, values, customValidation){
-  var fields = fields,                        // the list of model.field objects
-      customValidation = customValidation,
+var modelInstance = function modelInstance(spec){
+  var fields = spec.fields,                        // the list of model.field objects
+      customValidation = spec.customValidation,
       fieldValues = {},
+      methods = spec.methods,
       newFields = [],
       self = {};
 
@@ -118,7 +176,7 @@ var modelInstance = function(fields, values, customValidation){
     }
 
     // don't run the custom validation if the fields aren't all clean
-    if(errors.length === 0 && !customValidation(self)){
+    if(errors.length === 0 && customValidation && !customValidation.apply(self)){
       errors.push('Custom validation failed.');
     };
 
@@ -126,10 +184,22 @@ var modelInstance = function(fields, values, customValidation){
   };
 
   // unpack the values
-  for(var val in values){
-    if(values.hasOwnProperty(val)){
-      self.set(val, values[val]);
+  for(var val in spec.values){
+    if(spec.values.hasOwnProperty(val)){
+      self.set(val, spec.values[val]);
     }
+  }
+
+  // set an objectid if it's not given
+  if(spec.values && !spec.values['_id']){
+    self.set('_id', new mongo.ObjectID(null));
+  }
+
+  // unpack the methods
+  for(var m in methods){
+    self[m] = function(){
+      return methods[m].apply(self);
+    };
   }
 
   return self;

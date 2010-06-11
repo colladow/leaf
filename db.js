@@ -11,7 +11,13 @@ var Conn = function(conn){
 
 Conn.prototype = {
   print: function(){
-    sys.puts(this.conn);
+    this.conn.collection('users', function(err, coll){
+      coll.find({}, function(err, cur){
+        cur.each(function(err, doc){
+        });
+      });
+    });
+
     this.conn.close();
   }
 };
@@ -32,19 +38,19 @@ Step(
 
 var model = require('./model/');
 
-var user = new model.model({
+var user = model.model({
   fields: {
-    username: new model.field({ 
-      type: 'string', 
+    username: model.field({ 
+      type: String, 
       custom: function(value){
         return value.indexOf('c') === 0;
       }
      }),
-    first: new model.field({ type: 'string' }),
-    last: new model.field({ type: 'string', required: true }),
-    langs: new model.field({ type: 'object' }),
-    address: new model.field({ 
-      type: 'object', 
+    first: model.field({ type: String }),
+    last: model.field({ type: String, required: true }),
+    langs: model.field({ type: Array }),
+    address: model.field({ 
+      type: Object, 
       custom: function(value){
         if(typeof value.zip !== 'number'){
           return false;
@@ -54,18 +60,24 @@ var user = new model.model({
       }
     })
   },
-  validate: function(instance){
+  methods: {
+    fullName: function(){
+      return this.get('first') + ' ' + this.get('last');
+    }
+  },
+  validate: function validate(){
     var target = '',
-        last = instance.get('last') || '',
-        first = instance.get('first') || '';
+        last = this.get('last') || '',
+        first = this.get('first') || '';
 
     target = last.toLowerCase();
     target += first.slice(0, 1).toLowerCase();
 
-    return target === instance.get('username');
+    return target === this.get('username');
   }
 });
 
+/*
 sys.puts(user.toString());
 
 var u = user.create({ 
@@ -84,3 +96,9 @@ var u = user.create({
 sys.puts(u);
 
 sys.puts(u.validate());
+
+sys.puts(u.fullName());
+*/
+var u2 = user.get('colladow', function(instance){
+  sys.puts(instance.fullName());
+});
