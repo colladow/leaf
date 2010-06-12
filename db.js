@@ -12,10 +12,6 @@ var Conn = function(conn){
 Conn.prototype = {
   print: function(){
     this.conn.collection('users', function(err, coll){
-      coll.find({}, function(err, cur){
-        cur.each(function(err, doc){
-        });
-      });
     });
 
     this.conn.close();
@@ -99,6 +95,6 @@ sys.puts(u.validate());
 
 sys.puts(u.fullName());
 */
-var u2 = user.get('colladow', function(instance){
+var u2 = user.get('4c12bef6c428a53049e36cc5', function(instance){
   sys.puts(instance.fullName());
 });

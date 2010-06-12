@@ -3,12 +3,10 @@ var mongo = require('mongodb/');
 var server = new mongo.Server('localhost', mongo.Connection.DEFAULT_PORT);
 var db = new mongo.Db('test', server);
 
-var fillModel = function(user, callback){
-
+var fillModel = function(id, callback){
   db.open(function(err, db){
     db.collection('users', function(err, coll){
-      coll.findOne({ username: user }, function(err, doc){
-        require('sys').puts(user);
+      coll.findOne({ '_id': id }, function(err, doc){
         callback(err, doc);
         db.close();
       });
@@ -26,7 +24,7 @@ var field = function(options){
   var self = {};
 
   // returns an option
-  self.get = function get(attribute){
+  self.get = function(attribute){
     return options[attribute];
   };
 
@@ -75,11 +73,8 @@ var model = function(options){
   };
 
   self.get = function get(id, callback){
-    var id = id,
-        callback = callback;
-
     if(typeof id === 'string'){
-      id = new mongo.ObjectID(id);
+      id = mongo.ObjectID.createFromHexString(id);
     }
 
     fillModel(id, function(err, doc){
