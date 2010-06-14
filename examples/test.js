@@ -35,6 +35,8 @@ Step(
 var model = require('../lib/');
 
 var user = model.model({
+  name: 'User',
+  collectionName: 'users',
   fields: {
     username: model.field({ 
       type: String, 
@@ -95,6 +97,6 @@ sys.puts(u.validate());
 
 sys.puts(u.fullName());
 */
-var u2 = user.get('4c12bef6c428a53049e36cc5', function(instance){
+var u2 = user.getById('4c12bef6c428a53049e36cc5', function(instance){
   sys.puts(instance.fullName());
 });
