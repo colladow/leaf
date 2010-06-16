@@ -90,26 +90,29 @@ var u = user.create({
 
 sys.puts(u.fullName());
 
-var u2 = user.getById('4c1929557fa277510c000001', function(instance){
+var u2 = user.getById('4c194897fd60f6d00e000001', function(instance){
   sys.puts(instance.fullName());
 
   var newLangs = instance.get('langs');
-  //newLangs.push('C');
-  newLangs.pop();
   instance.set('langs', newLangs);
 
   instance.save(function(success, obj){
-    var u3 = user.getById('4c1929557fa277510c000001', function(instance){
+    var u3 = user.getById('4c194897fd60f6d00e000001', function(instance){
       sys.puts(sys.inspect(instance.get('langs')));
     });
   });
 });
-/*
+
 u.save(function(success, obj){
   if(success){
     sys.puts('Created => ');
     sys.puts(sys.inspect(obj));
     sys.puts(sys.inspect(u.get('_id')));
   }
+
+  u.remove(function(err){
+    if(!err){
+      sys.puts('Removed!');
+    }
+  });
 });
-*/
