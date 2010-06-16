@@ -75,14 +75,11 @@ var user = model.model({
   }
 });
 
-/*
-sys.puts(user.toString());
-
 var u = user.create({ 
-  username: 'colladow',
-  first: 'Wilson',
+  username: 'colladox',
+  first: 'Xilson',
   last: 'Collado',
-  langs: ['javascript', 'python'],
+  langs: ['java', 'perl'],
   address: {
     street: '7711 60th St',
     city: 'Ridgewood',
@@ -91,12 +88,28 @@ var u = user.create({
   }
 });
 
-sys.puts(u);
-
-sys.puts(u.validate());
-
 sys.puts(u.fullName());
-*/
-var u2 = user.getById('4c12bef6c428a53049e36cc5', function(instance){
+
+var u2 = user.getById('4c1929557fa277510c000001', function(instance){
   sys.puts(instance.fullName());
+
+  var newLangs = instance.get('langs');
+  //newLangs.push('C');
+  newLangs.pop();
+  instance.set('langs', newLangs);
+
+  instance.save(function(success, obj){
+    var u3 = user.getById('4c1929557fa277510c000001', function(instance){
+      sys.puts(sys.inspect(instance.get('langs')));
+    });
+  });
 });
+/*
+u.save(function(success, obj){
+  if(success){
+    sys.puts('Created => ');
+    sys.puts(sys.inspect(obj));
+    sys.puts(sys.inspect(u.get('_id')));
+  }
+});
+*/
