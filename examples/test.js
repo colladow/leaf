@@ -116,3 +116,11 @@ u.save(function(success, obj){
     }
   });
 });
+
+var q = user.get({ username: 'colladow' });
+
+q.each(function(err, doc){
+  if(doc){
+    sys.puts(doc.first);
+  }
+});
