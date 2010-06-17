@@ -1,6 +1,6 @@
 var mongo = require('mongodb'),
 		sys = require('sys'),
-		leaf = require('../lib');
+		leaf = require('../lib/leaf');
 
 var user = leaf.model({
   name: 'User',
