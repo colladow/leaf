@@ -61,7 +61,10 @@ var user = model.model({
   methods: {
     fullName: function(){
       return this.get('first') + ' ' + this.get('last');
-    }
+    },
+		zipCode: function(){
+			return this.get('address').zip;
+		}
   },
   validate: function validate(){
     var target = '',
@@ -89,6 +92,7 @@ var u = user.create({
 });
 
 sys.puts(u.fullName());
+sys.puts(u.zipCode());
 
 var u2 = user.getById('4c194897fd60f6d00e000001', function(instance){
   sys.puts(instance.fullName());
