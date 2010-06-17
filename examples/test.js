@@ -1,6 +1,6 @@
 var mongo = require('mongodb'),
-		sys = require('sys'),
-		leaf = require('../lib/leaf');
+    sys = require('sys'),
+    leaf = require('../lib/leaf');
 
 var user = leaf.model({
   name: 'User',
@@ -30,9 +30,9 @@ var user = leaf.model({
     fullName: function(){
       return this.get('first') + ' ' + this.get('last');
     },
-		zipCode: function(){
-			return this.get('address').zip;
-		}
+    zipCode: function(){
+      return this.get('address').zip;
+    }
   },
   validate: function validate(){
     var target = '',
@@ -45,9 +45,9 @@ var user = leaf.model({
     return target === this.get('username');
   }
 })({
-	dbname: 'test',
-	host: 'localhost',
-	port: mongo.Connection.DEFAULT_PORT
+  dbname: 'test',
+  host: 'localhost',
+  port: mongo.Connection.DEFAULT_PORT
 });
 
 var u = user.create({ 
@@ -97,7 +97,7 @@ u.save(function(success, obj){
 var q = user.find({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 });
 
 q.each(function(err, doc){
-	sys.puts('DOC---------------');
-	sys.puts(sys.inspect(doc.toObject()));
+  sys.puts('DOC---------------');
+  sys.puts(sys.inspect(doc.toObject()));
 });
 
