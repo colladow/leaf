@@ -1,40 +1,8 @@
-var mongo = require('mongodb/');
-var Step = require('step');
-var sys = require('sys');
+var mongo = require('mongodb'),
+		sys = require('sys'),
+		leaf = require('../lib');
 
-var server = new mongo.Server('localhost', mongo.Connection.DEFAULT_PORT);
-var db = new mongo.Db('test', server);
-
-var Conn = function(conn){
-  this.conn = conn;
-};
-
-Conn.prototype = {
-  print: function(){
-    this.conn.collection('users', function(err, coll){
-    });
-
-    this.conn.close();
-  }
-};
-
-Step(
-  function(){
-    db.open(this);
-  },
-  function(err, conn){
-    var c = new Conn(conn);
-
-    return c;
-  },
-  function(err, cObj){
-    cObj.print();
-  }
-);
-
-var model = require('../lib/');
-
-var user = model.model({
+var user = leaf.model({
   name: 'User',
   collectionName: 'users',
   fields: {
@@ -76,6 +44,10 @@ var user = model.model({
 
     return target === this.get('username');
   }
+})({
+	dbname: 'test',
+	host: 'localhost',
+	port: mongo.Connection.DEFAULT_PORT
 });
 
 var u = user.create({ 
@@ -122,7 +94,7 @@ u.save(function(success, obj){
   });
 });
 
-var q = user.get({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 });
+var q = user.find({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 });
 
 q.each(function(err, doc){
 	sys.puts('DOC---------------');
