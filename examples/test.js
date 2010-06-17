@@ -38,16 +38,16 @@ var user = model.model({
   name: 'User',
   collectionName: 'users',
   fields: {
-    username: model.field({ 
+    username: { 
       type: String, 
       custom: function(value){
         return value.indexOf('c') === 0;
       }
-     }),
-    first: model.field({ type: String }),
-    last: model.field({ type: String, required: true }),
-    langs: model.field({ type: Array }),
-    address: model.field({ 
+     },
+    first: { type: String },
+    last: { type: String, required: true },
+    langs: { type: Array },
+    address: { 
       type: Object, 
       custom: function(value){
         if(typeof value.zip !== 'number'){
@@ -56,7 +56,7 @@ var user = model.model({
 
         return true;
       }
-    })
+    }
   },
   methods: {
     fullName: function(){
@@ -101,6 +101,7 @@ var u2 = user.getById('4c194897fd60f6d00e000001', function(instance){
       sys.puts(sys.inspect(instance.get('langs')));
     });
   });
+
 });
 
 u.save(function(success, obj){
@@ -117,10 +118,10 @@ u.save(function(success, obj){
   });
 });
 
-var q = user.get({ username: 'colladow' });
+var q = user.get({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 }).explain();
 
 q.each(function(err, doc){
-  if(doc){
-    sys.puts(doc.first);
-  }
+	sys.puts('DOC---------------');
+	sys.puts(sys.inspect(doc));
 });
+
