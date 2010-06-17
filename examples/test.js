@@ -122,10 +122,10 @@ u.save(function(success, obj){
   });
 });
 
-var q = user.get({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 }).explain();
+var q = user.get({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 });
 
 q.each(function(err, doc){
 	sys.puts('DOC---------------');
-	sys.puts(sys.inspect(doc));
+	sys.puts(sys.inspect(doc.toObject()));
 });
 
