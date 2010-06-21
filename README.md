@@ -66,13 +66,13 @@
 
   This example shows most of what you can do with a Leaf model. Here's a breakdown of the options:
 
-	- name: The model's name...duh...
-	- collectionName: The name of the mongo collection to use. Defaults to name.toLowerCase()
-	- fields: An object describing the fields in your model. The keys are the field names. Options:
-		+ type: The constructor of the field. On validation, it will check value.constructor === type.
-		+ required: Is this field required? Defaults to false.
-		+ custom: A function where you can supply custom validation. Your function will be passed the target value.
-	- methods: An object that contains instance level functions that will be added to all instances of your model. You can look at the source for modelInstance to get a better feel for how this works.
+- name: The model's name...duh...
+- collectionName: The name of the mongo collection to use. Defaults to name.toLowerCase()
+- fields: An object describing the fields in your model. The keys are the field names. Options:
+  + type: The constructor of the field. On validation, it will check value.constructor === type.
+  + required: Is this field required? Defaults to false.
+  + custom: A function where you can supply custom validation. Your function will be passed the target value.
+ methods: An object that contains instance level functions that will be added to all instances of your model. You can look at the source for modelInstance to get a better feel for how this works.
 
 ## Model Instances
 
