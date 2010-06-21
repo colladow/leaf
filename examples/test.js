@@ -34,7 +34,7 @@ var user = leaf.model({
       return this.get('address').zip;
     }
   },
-  validate: function validate(){
+  validate: function(){
     var target = '',
         last = this.get('last') || '',
         first = this.get('first') || '';
@@ -46,8 +46,7 @@ var user = leaf.model({
   }
 })({
   dbname: 'test',
-  host: 'localhost',
-  port: mongo.Connection.DEFAULT_PORT
+  host: 'localhost'
 });
 
 var u = user.create({ 
@@ -66,22 +65,22 @@ var u = user.create({
 sys.puts(u.fullName());
 sys.puts(u.zipCode());
 
-var u2 = user.getById('4c194897fd60f6d00e000001', function(instance){
+var u2 = user.getById('4c194897fd60f6d00e000001', function(err, instance){
   sys.puts(instance.fullName());
 
   var newLangs = instance.get('langs');
   instance.set('langs', newLangs);
 
-  instance.save(function(success, obj){
-    var u3 = user.getById('4c194897fd60f6d00e000001', function(instance){
+  instance.save(function(err, obj){
+    var u3 = user.getById('4c194897fd60f6d00e000001', function(err, instance){
       sys.puts(sys.inspect(instance.get('langs')));
     });
   });
 
 });
 
-u.save(function(success, obj){
-  if(success){
+u.save(function(err, obj){
+  if(!err){
     sys.puts('Created => ');
     sys.puts(sys.inspect(obj));
     sys.puts(sys.inspect(u.get('_id')));
