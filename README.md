@@ -72,7 +72,7 @@
   + type: The constructor of the field. On validation, it will check value.constructor === type.
   + required: Is this field required? Defaults to false.
   + custom: A function where you can supply custom validation. Your function will be passed the target value.
- methods: An object that contains instance level functions that will be added to all instances of your model. You can look at the source for modelInstance to get a better feel for how this works.
+- methods: An object that contains instance level functions that will be added to all instances of your model. You can look at the source for modelInstance to get a better feel for how this works.
 
 ## Model Instances
 
