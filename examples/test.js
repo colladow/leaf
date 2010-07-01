@@ -34,6 +34,13 @@ var user = leaf.model({
       return this.get('address').zip;
     }
   },
+  proto: {
+    findXilsons: function(callback){
+      var q = this.find({ first: 'Xilson' }).limit(2);
+
+      q.each(callback);
+    }
+  },
   validate: function(){
     var target = '',
         last = this.get('last') || '',
@@ -61,6 +68,15 @@ var u = user.create({
     zip: 11385
   }
 });
+
+var count = 1;
+user.findXilsons(function(err, doc){
+  sys.puts('Xilson ' + count);
+  sys.puts(doc.fullName());
+
+  count++;
+});
+
 
 sys.puts(u.fullName());
 sys.puts(u.zipCode());
