@@ -109,7 +109,7 @@ u.save(function(err, obj){
   });
 });
 
-var q = user.find({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 });
+var q = user.find({ username: 'colladox' }).limit(2).fields({ username: 1, last: 1 }).sort({ '_id': -1 });
 
 q.each(function(err, doc){
   sys.puts('DOC---------------');
