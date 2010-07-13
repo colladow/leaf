@@ -114,5 +114,7 @@ var q = user.find({ username: 'colladox' }).limit(2).fields({ username: 1, last:
 q.each(function(err, doc){
   sys.puts('DOC---------------');
   sys.puts(sys.inspect(doc.toObject()));
+}, function(){
+	sys.puts('QUERY DONE! =====');
 });
 
