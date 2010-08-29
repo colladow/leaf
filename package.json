@@ -1,0 +1,11 @@
+{ "name": "leaf"
+, "description":  "Object Mapper for MongoDB on Node"
+, "version":  "0.0.2"
+, "author": "Wilson Collado <colladow@me.com>"
+, "dependencies": { "mongodb": "0.7.9"}
+, "keywords": [ "leaf", "mongo", "mongodb", "orm", "nosql", "node" ]
+, "directories":  { "lib": "./lib" }
+, "engines": { "node": ">= 0.1.101" }
+, "main": "./lib/leaf"
+, "licenses": [ { "type": "The MIT License", "url": "http://www.opensource.org/licenses/mit-license.php" } ]
+}
