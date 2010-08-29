@@ -1,6 +1,6 @@
 { "name": "leaf"
 , "description":  "Object Mapper for MongoDB on Node"
-, "version":  "0.0.2"
+, "version":  "0.0.3"
 , "author": "Wilson Collado <colladow@me.com>"
 , "dependencies": { "mongodb": "0.7.9"}
 , "keywords": [ "leaf", "mongo", "mongodb", "orm", "nosql", "node" ]
