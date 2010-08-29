@@ -56,6 +56,10 @@ var user = leaf.model({
   host: 'localhost'
 });
 
+var q = user.find({ username: 'colladox' }).count(function(err, count){
+  console.log(count);
+});
+/*
 var u = user.create({ 
   username: 'colladox',
   first: 'Xilson',
@@ -117,4 +121,5 @@ q.each(function(err, doc){
 }, function(){
 	sys.puts('QUERY DONE! =====');
 });
+*/
 
